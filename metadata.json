@@ -1,0 +1,6 @@
+{
+  "name": "Script-to-Video Generator",
+  "description": "AI-powered script to video generator producing real MP4 videos with voiceover, burned-in subtitles, and B-roll suggestions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
