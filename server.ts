@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = process.env.NODE_ENV === 'production' || fs.existsSync(path.join(__dirname, 'dist', 'index.html'));
 
 // Ensure storage directories exist
 const OUTPUT_DIR = path.join(__dirname, 'data', 'videos');
@@ -26,6 +26,18 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 }
 
 app.use(express.json({ limit: '10mb' }));
+
+// Enable CORS for cross-origin frontend (e.g. Vercel)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Range');
+  res.header('Access-Control-Expose-Headers', 'Content-Range, Accept-Ranges, Content-Length');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 
 /**
  * Health check endpoint

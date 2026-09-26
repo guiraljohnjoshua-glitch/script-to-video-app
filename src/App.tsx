@@ -14,6 +14,8 @@ import { ArchitectureModal } from './components/ArchitectureModal.js';
 import { SubtitleStyle, GeneratedVideoData } from './types.js';
 import { Play, AlertCircle, Film, RefreshCw, Sparkles, Layers } from 'lucide-react';
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+
 export default function App() {
   const [script, setScript] = useState<string>(DEMO_SCRIPT);
   const [subtitleStyle, setSubtitleStyle] = useState<SubtitleStyle>('classic');
@@ -37,7 +39,7 @@ export default function App() {
     setErrorMessage(null);
 
     try {
-      const response = await fetch('/api/generate-video', {
+      const response = await fetch(`${API_BASE}/api/generate-video`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +57,13 @@ export default function App() {
         throw new Error(data.error || 'Failed to generate video. Please try again.');
       }
 
-      setGeneratedData(data);
+      const normalizedData: GeneratedVideoData = {
+        ...data,
+        videoUrl: data.videoUrl.startsWith('http') ? data.videoUrl : `${API_BASE}${data.videoUrl}`,
+        downloadUrl: data.downloadUrl.startsWith('http') ? data.downloadUrl : `${API_BASE}${data.downloadUrl}`,
+      };
+
+      setGeneratedData(normalizedData);
       if (overrideStyle) {
         setSubtitleStyle(overrideStyle);
       }
